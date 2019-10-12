@@ -1,1 +1,162 @@
-function getRandomInt(t,e){return Math.floor(Math.random()*(e-t+1))+t}$(document).ready(function(){if($(".hero--video").click(function(){$(this).hasClass("paused")?($(this).removeClass("paused"),$(".hero--home").addClass("playing"),$(".hero--video")[0].play()):($(this).addClass("paused"),$(".hero--home").removeClass("playing"),$(".hero--video")[0].pause())}),600<$(window).width()&&$("video").length&&($(this).removeClass("paused"),$(".hero--home").addClass("playing"),$(".hero--video")[0].play()),$("form").submit(function(t){var e=$(this);t.preventDefault();var a=$(this).attr("action"),i={};$(this).find("input").each(function(){var t=$(this).val(),e=$(this).attr("name");i[e]=t}),$(this).find("textarea").each(function(){var t=$(this).val(),e=$(this).attr("name");i[e]=t}),i.page=document.location.href,$.post(a,i).then(function(t){e.html(e.data("thanks"))},function(){console.log("error")})}),$lighters=$(".square"),$lighters.length){var i=900,t=0;function e(t){var e=[];0<t&&12!=t&&24!=t&&e.push(t-1),11!=t&&23!=t&&35!=t&&e.push(t+1),t<=23&&e.push(t+12),12<=t&&e.push(t-12),e.push(t);for(var a=0;a<e.length;a++)$light=$($lighters[e[a]]),$light.addClass("lit"),function(t){window.setTimeout(function(){t.removeClass("lit")},i)}($light)}$(".square").each(function(){$(this).attr("data-shimmer",t),t++}),$(".square").hover(function(){e($(this).attr("data-shimmer"))})}var o=["memorable","effective","inspiring","persuasive","meaningful","innovative"],h=$(".js-adjective"),r=(t=0,function(){window.setTimeout(function(){var a=o[++t];a||(a=o[t=0]);var i=!0,n=0,s=window.setInterval(function(){var t=h.text();if(t&&i){var e=t.slice(0,t.length-1);e||(i=!(e="&nbsp;")),h.html(e)}else n++,h.text(a.slice(0,n)),n==a.length&&(window.clearInterval(s),r())},100)},3e3)});h.length&&r(),$(".menu-toggle").click(function(){$(".navigation-menu").toggleClass("open")})});
+function getRandomInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+$(document).ready(function(){
+
+  $('.hero--video').click(function(){
+    if($(this).hasClass('paused')) {
+      $(this).removeClass('paused');
+      $('.hero--home').addClass('playing');
+      $('.hero--video')[0].play();
+    } else {
+      $(this).addClass('paused');
+      $('.hero--home').removeClass('playing');
+      $('.hero--video')[0].pause();
+    }
+    
+  });
+
+  if($(window).width() > 600 && $('video').length ){
+    $(this).removeClass('paused');
+    $('.hero--home').addClass('playing');
+    $('.hero--video')[0].play();
+  }
+
+  $('form').submit(function(e){
+    var $form = $(this);
+    e.preventDefault();
+    var destination = $(this).attr('action');
+    var data = {};
+    $(this).find('input').each(function(){
+      var val = $(this).val();
+      var key = $(this).attr('name');
+      data[key] = val;
+    });
+
+    $(this).find('textarea').each(function(){
+      var val = $(this).val();
+      var key = $(this).attr('name');
+      data[key] = val;
+    });
+
+    data.page = document.location.href;
+
+    function greatSuccess() {
+      $form.html($form.data('thanks'));
+    }
+
+    $.post(destination, data).then(function(response){
+      greatSuccess();
+    }, function() {
+      console.log('error');
+    });
+  });
+
+  $lighters = $('.square');
+
+  if($lighters.length) {
+    var timer_animation = 150;
+    var timer_class= 900;
+
+    var counter = 0;
+    $('.square').each(function(){
+      $(this).attr('data-shimmer', counter);
+      counter++;
+    });
+
+    
+    function lightemup(count){
+      var nextSeeds = [];
+      if(count>0 && count !=12 && count !=24) {
+        nextSeeds.push(count - 1);
+      }
+      if(count !=11 && count !=23 && count !=35) {
+        nextSeeds.push(count + 1);
+      }
+      if(count<=23) {
+        nextSeeds.push(count + 12);
+      }
+      if(count>=12) {
+        nextSeeds.push(count - 12);
+      }
+      nextSeeds.push(count);
+      //console.log(nextSeeds);
+      
+      for(var i=0;i<nextSeeds.length;i++) {
+        $light =$($lighters[nextSeeds[i]]);
+        $light.addClass('lit');
+        (function($light){
+          window.setTimeout(function(){
+            $light.removeClass('lit');
+          }, timer_class);
+        })($light);
+      }
+    }
+
+    function startemup(){
+      seed = getRandomInt(0, $lighters.length-1);
+      seedPosition = seed;
+      lightemup(seed);
+    }
+
+    $('.square').hover(function(){
+      //console.log('hovered');
+      var count = $(this).attr('data-shimmer');
+      lightemup(count);
+    });
+
+    //window.setInterval(startemup, timer_animation);
+
+  }
+
+  var adjectives = [ 'memorable', 'effective', 'inspiring', 'persuasive', 'meaningful', 'innovative'];
+
+  var $adj = $('.js-adjective');
+  var counter = 0;
+
+  var changeHomepageAdj = function() {
+    window.setTimeout(function(){
+      counter++;
+      var nextText = adjectives[counter];
+      if(!nextText) {
+        counter = 0;
+        nextText = adjectives[counter];
+      }
+      var countDown = true;
+      var countUp = 0;
+
+      var type = window.setInterval(function() {
+        var currentText = $adj.text();
+        if(currentText && countDown) {
+          var newText = currentText.slice(0,currentText.length-1);
+          if(!newText) {
+            newText = '&nbsp;';
+            countDown = false;
+          }
+          $adj.html(newText);
+        } else {
+          countUp++;
+          $adj.text(nextText.slice(0,countUp));
+          if(countUp == nextText.length) {
+            window.clearInterval(type);
+            changeHomepageAdj();
+          }
+        }
+       
+      }, 100);
+
+    }, 3000);
+
+  }
+
+  if($adj.length) {
+    changeHomepageAdj();
+  }
+
+  $('.menu-toggle').click(function(){
+    var $menu = $('.navigation-menu');
+    $menu.toggleClass('open');
+  });
+  
+});
